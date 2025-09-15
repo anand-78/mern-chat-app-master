@@ -1,43 +1,42 @@
 import { createContext, useState, useEffect, useContext } from "react";
 import { useAuthContext } from "./AuthContext";
-import io from "socket.io-client";
+import { io } from "socket.io-client";
 
 const SocketContext = createContext();
 
-export const useSocketContext = () => {
-	return useContext(SocketContext);
-};
+export const useSocketContext = () => useContext(SocketContext);
 
 export const SocketContextProvider = ({ children }) => {
-	const [socket, setSocket] = useState(null);
-	const [onlineUsers, setOnlineUsers] = useState([]);
-	const { authUser } = useAuthContext();
+  const [socket, setSocket] = useState(null);
+  const [onlineUsers, setOnlineUsers] = useState([]);
+  const { authUser } = useAuthContext();
 
-const ENDPOINT =
-  process.env.NODE_ENV === "production"
-    ? window.location.origin // deployed backend URL
-    : "http://localhost:5000"; // local dev
+  useEffect(() => {
+    if (authUser) {
+      const ENDPOINT =
+        process.env.NODE_ENV === "production"
+          ? window.location.origin
+          : "http://localhost:5000";
 
-const socket = io(ENDPOINT, {
-  query: { userId: authUser._id },
-});
+      const newSocket = io(ENDPOINT, { query: { userId: authUser._id } });
+      setSocket(newSocket);
 
+      newSocket.on("getOnlineUsers", (users) => {
+        setOnlineUsers(users);
+      });
 
-			setSocket(socket);
+      return () => {
+        newSocket.close();
+      };
+    } else if (socket) {
+      socket.close();
+      setSocket(null);
+    }
+  }, [authUser]);
 
-			// socket.on() is used to listen to the events. can be used both on client and server side
-			socket.on("getOnlineUsers", (users) => {
-				setOnlineUsers(users);
-			});
-
-			return () => socket.close();
-		} else {
-			if (socket) {
-				socket.close();
-				setSocket(null);
-			}
-		}
-	}, [authUser]);
-
-	return <SocketContext.Provider value={{ socket, onlineUsers }}>{children}</SocketContext.Provider>;
+  return (
+    <SocketContext.Provider value={{ socket, onlineUsers }}>
+      {children}
+    </SocketContext.Provider>
+  );
 };
