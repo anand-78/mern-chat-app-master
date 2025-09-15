@@ -1,0 +1,110 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* === Futuristic Dynamic Background === */
+body {
+	background: linear-gradient(120deg, rgba(0, 255, 200, 0.15), rgba(0, 120, 255, 0.15)),
+		url("https://picsum.photos/3840/2160?random=meta");
+	background-size: cover;
+	background-position: center;
+	background-attachment: fixed;
+	animation: bgZoom 40s ease-in-out infinite alternate;
+	color: #fff;
+	overflow-x: hidden;
+	opacity: 0;
+	animation: fadeIn 2s ease forwards;
+}
+
+/* Zooming background for depth */
+@keyframes bgZoom {
+	0% {
+		background-size: 100% 100%;
+	}
+	100% {
+		background-size: 110% 110%;
+	}
+}
+
+/* Smooth fade-in */
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+/* === Meta Gradient Scrollbar === */
+::-webkit-scrollbar {
+	width: 10px;
+}
+
+::-webkit-scrollbar-track {
+	background: #0e1a2b;
+}
+
+::-webkit-scrollbar-thumb {
+	background: linear-gradient(180deg, #00f5ff, #0066ff, #a800ff);
+	border-radius: 10px;
+	box-shadow: 0 0 10px #00f5ff, 0 0 20px #a800ff;
+	transition: all 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: linear-gradient(180deg, #ff00d4, #00ffd5);
+	box-shadow: 0 0 20px #ff00d4, 0 0 30px #00ffd5;
+}
+
+/* === Glassmorphism Cards (use class="glass-card") === */
+.glass-card {
+	background: rgba(255, 255, 255, 0.08);
+	backdrop-filter: blur(18px);
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	border-radius: 16px;
+	padding: 2rem;
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+	transition: all 0.4s ease-in-out;
+}
+
+.glass-card:hover {
+	transform: translateY(-5px) scale(1.02);
+	box-shadow: 0 0 25px rgba(0, 255, 200, 0.4), 0 0 40px rgba(0, 120, 255, 0.5);
+}
+
+/* === Floating Particles (like stars) === */
+.particle {
+	position: absolute;
+	width: 3px;
+	height: 3px;
+	background: #fff;
+	border-radius: 50%;
+	animation: floatParticle 15s linear infinite;
+	opacity: 0.6;
+}
+
+@keyframes floatParticle {
+	from {
+		transform: translateY(100vh) translateX(0);
+	}
+	to {
+		transform: translateY(-10vh) translateX(50px);
+		opacity: 0;
+	}
+}
+
+/* === Shake Animation (for errors) === */
+.shake {
+	animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) 0.2s both;
+	transform: translate3d(0, 0, 0);
+	backface-visibility: hidden;
+	perspective: 1000px;
+}
+
+@keyframes shake {
+	10%, 90% { transform: translate3d(-1px, 0, 0); }
+	20%, 80% { transform: translate3d(2px, 0, 0); }
+	30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+	40%, 60% { transform: translate3d(4px, 0, 0); }
+}

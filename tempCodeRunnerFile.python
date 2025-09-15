@@ -1,0 +1,84 @@
+import tkinter as tk
+import math
+
+class BeatingHeart:
+    def __init__(self, canvas, width, height):
+        self.canvas = canvas
+        self.width = width
+        self.height = height
+        self.scale = 15
+        self.grow = True
+        self.heart = None
+        self.step = 0
+
+        # Gradient colors to blend between (R,G,B)
+        self.start_color = (255, 0, 0)   # red
+        self.end_color   = (255, 192, 203) # pink
+
+        self.animate()
+
+    def rgb_to_hex(self, r, g, b):
+        """Convert RGB to hex color string."""
+        return f'#{int(r):02x}{int(g):02x}{int(b):02x}'
+
+    def interpolate_color(self, t):
+        """Smoothly blend between start and end color."""
+        r = (1-t)*self.start_color[0] + t*self.end_color[0]
+        g = (1-t)*self.start_color[1] + t*self.end_color[1]
+        b = (1-t)*self.start_color[2] + t*self.end_color[2]
+        return self.rgb_to_hex(r, g, b)
+
+    def draw_heart(self, scale, color, offset_y):
+        points = []
+        for t in range(0, 360, 2):
+            angle = math.radians(t)
+            x = 16 * math.sin(angle) ** 3
+            y = 13 * math.cos(angle) - 5 * math.cos(2 * angle) - 2 * math.cos(3 * angle) - math.cos(4 * angle)
+
+            px = self.width // 2 + int(x * scale)
+            py = self.height // 2 - int(y * scale) + offset_y
+            points.append((px, py))
+
+        flat_points = [coord for point in points for coord in point]
+
+        if self.heart:
+            self.canvas.delete(self.heart)
+
+        self.heart = self.canvas.create_polygon(flat_points, fill=color, outline=color)
+
+    def animate(self):
+        # Heartbeat scaling
+        if self.grow:
+            self.scale += 0.4
+            if self.scale > 18:
+                self.grow = False
+        else:
+            self.scale -= 0.4
+            if self.scale < 15:
+                self.grow = True
+
+        # Smooth color cycling
+        t = (math.sin(self.step/10) + 1) / 2  # value in [0,1]
+        color = self.interpolate_color(t)
+
+        # Vertical floating effect (sending feeling)
+        offset_y = int(math.sin(self.step/20) * 30)
+
+        self.draw_heart(self.scale, color, offset_y)
+
+        self.step += 1
+        self.canvas.after(50, self.animate)
+
+
+# Main Tkinter window
+root = tk.Tk()
+root.title("Glowing Beating Heart 💖✨")
+
+canvas_width = 600
+canvas_height = 600
+canvas = tk.Canvas(root, width=canvas_width, height=canvas_height, bg="black")
+canvas.pack()
+
+heart = BeatingHeart(canvas, canvas_width, canvas_height)
+
+root.mainloop()
