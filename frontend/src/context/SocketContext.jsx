@@ -16,7 +16,7 @@ export const SocketContextProvider = ({ children }) => {
       const ENDPOINT =
         process.env.NODE_ENV === "production"
           ? window.location.origin
-          : "http://localhost:5000";
+          : "https://mern-chat-app-master-1-b91x.onrender.com/";
 
       const newSocket = io(ENDPOINT, { query: { userId: authUser._id } });
       setSocket(newSocket);
